@@ -26,7 +26,7 @@ public class Main {
     public static void main(String[] args){
         try {
             fw = new FileWriter("./query-timer/responsetimes.csv");
-            fw.write("Query,Mean,Standard Deviation,Longer Time, Shorter Time\n");
+            fw.write("Query,Mean,Standard Deviation,Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD)\n");
             for (String query : queries) {
                 try {       
                     measureQuery(query);         
@@ -35,8 +35,8 @@ public class Main {
                     + " or writing its response times.");
                 } catch (QueryEvaluationException e) {
                     System.out.println("Timeout took place in " + query);
-                    fw.write(String.format("%s,%d,%d,%d,%d\n", 
-                                query.split("resources/")[1].replace(".sparql", "").toUpperCase(), -1, -1, -1, -1));
+                    fw.write(String.format("%s,%d,%d,%d,%d,%d,%d\n", 
+                                query.split("resources/")[1].replace(".sparql", "").toUpperCase(), -1, -1, -1, -1, -1, -1));
                 }
             }
             
@@ -60,8 +60,10 @@ public class Main {
 
         double total = 0;
         double[] values = new double[REPETITIONS];
+        double[] nodeValues = new double[REPETITIONS];
         double longer = -1;
         double shorter = Double.MAX_VALUE;
+        int totalnodes = 0;
 
         for(int i = 0; i < REPETITIONS; i++) {
             String data = SPARQLReader.readFile(query);
@@ -72,15 +74,24 @@ public class Main {
             values[i] = responseTime;
             longer = MathUtil.getLarger(longer, responseTime);
             shorter = MathUtil.getShorter(shorter, responseTime);
+            int numberOfNodes = timer.getNumberOfNodes();
+            totalnodes += numberOfNodes;
+            nodeValues[i] = numberOfNodes;
         }   
         double mean = MathUtil.getMean(total, REPETITIONS);
         double sd = MathUtil.calculateSD(values, mean);
 
+        double meanNodes = MathUtil.getMean(totalnodes, REPETITIONS);
+        double sdNodes = MathUtil.calculateSD(nodeValues, meanNodes);
+
         System.out.println("MEAN: " + mean);
         System.out.println("STANDARD DEVIATION: " + sd);
-        System.out.println("LONGER RESPONSE TIME: " + longer);
-        System.out.println("SHORTER RESPONSE TIME: " + shorter);
-        fw.write(String.format("%s,%d,%d,%d,%d\n", queryName, (int) mean, (int) sd, (int) longer, (int) shorter));
+        System.out.println("LONGEST RESPONSE TIME: " + longer);
+        System.out.println("SHORTEST RESPONSE TIME: " + shorter);
+        System.out.println("NUMBER OF NODES (x̄): " + meanNodes);
+        System.out.println("NUMBER OF NODES (SD): " + sdNodes);
+        fw.write(String.format("%s,%d,%d,%d,%d,%d,%d\n", queryName, (int) mean, (int) sd, (int) longer, (int) shorter,
+            (int) meanNodes, (int) sdNodes));
     }
 
     

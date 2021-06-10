@@ -14,6 +14,7 @@ public class SPARQLTimer {
 
     private double initTime;
     private double finalTime;
+    private int numberOfNodes;
 
     public void executeQuery(String query,String endpoint) throws QueryEvaluationException {
 
@@ -26,6 +27,8 @@ public class SPARQLTimer {
                 QueryLanguage.SPARQL, query);
 
         List<BindingSet> bindingSets = QueryResults.asList(tupleQuery.evaluate());
+        numberOfNodes = bindingSets.size();
+        System.out.println("NODES: " + numberOfNodes);
 
         stopCrono();
     }
@@ -41,6 +44,10 @@ public class SPARQLTimer {
 
     public double getExecutionTime(){
         return finalTime-initTime;
+    }
+
+    public int getNumberOfNodes() {
+        return numberOfNodes;
     }
 
 }
