@@ -1,0 +1,64 @@
+# This workflow description file is intended to be used with
+# the thewilly/dwr tool. To run:
+#
+# docker run \\
+#   -v /var/run/docker.sock:/var/run/docker.sock \\
+#   -v /home/$USER/workflows/:/workflows \\
+#   thewilly/dwr \\
+#   /workflows/download-and-extract-latest-wikidata-dumps.yml
+
+workflow_name: download-and-extract-latest-wikidata-dumps
+
+jobs:
+
+  #### DOWNLOAD JOBS ####
+  
+  download_ttl_data:
+    image: wesogroup/wd-dump-download-ttl-job
+
+    volumes:
+      - "/home/shared/datasets/wikidata:/jobdir"
+      
+  download_json_data:
+    image: wesogroup/wd-dump-download-json-job
+
+    volumes:
+      - "/home/shared/datasets/wikidata:/jobdir"
+      
+  download_nt_data:
+    image: wesogroup/wd-dump-download-nt-job
+
+    volumes:
+      - "/home/shared/datasets/wikidata:/jobdir"
+
+  #### EXTRACTION JOBS ####
+  
+  extract_ttl_data:
+    image: wesogroup/extract-bz2-job
+    depends_on: download_ttl_data
+
+    volumes:
+      - "/hime/shared:/jobdir"
+      
+    commands:
+      - latest-all.ttl.bz2
+      
+  extract_json_data:
+    image: wesogroup/extract-bz2-job
+    depends_on: download_json_data
+
+    volumes:
+      - "/hime/shared:/jobdir"
+      
+    commands:
+      - latest-all.json.bz2
+      
+  extract_nt_data:
+    image: wesogroup/extract-bz2-job
+    depends_on: download_nt_data
+
+    volumes:
+      - "/hime/shared:/jobdir"
+      
+    commands:
+      - latest-all.nt.bz2
