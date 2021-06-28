@@ -5,7 +5,6 @@ public class MathUtil {
     public static double calculateSD(double values[], double mean)
     {
         double standardDeviation = 0.0;
-
         for(double num: values) {
             standardDeviation += Math.pow(num - mean, 2);
         }

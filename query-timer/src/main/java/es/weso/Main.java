@@ -14,12 +14,13 @@ public class Main {
 
     private final static String WIKIDATA_ENDPOINT = "https://query.wikidata.org/sparql";
 
-    private final static int REPETITIONS = 1;
+    private final static int REPETITIONS = 3;
 
     private static FileWriter fw;
 
     private final static List<String> queries = new ArrayList<String>(Arrays.asList(
     "/query-timer/src/main/resources/country_authors.sparql"
+    //"/query-timer/src/main/resources/country_organizations.sparql"
     //"/query-timer/src/main/resources/luxembourg_authors.sparql",
     //"/query-timer/src/main/resources/spain_authors.sparql",
     //"/query-timer/src/main/resources/university_oxford_topics.sparql",
@@ -32,13 +33,13 @@ public class Main {
     "Q778",
     "Q32",
     "Q29",
-    "Q183",
-    "Q30"
+    "Q183"
     ));
 
     public static void main(String[] args){
         try {
-            fw = new FileWriter("./query-timer/responsetimes_bl.csv");
+            fw = new FileWriter("./query-timer/responsetimes2.csv");
+            fw.write("Query,Total time (x̄),Total time (SD),Initial Results Time (x̄),Initial Results Time (SD),Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD),Number of queries (x̄),Number of queries (SD),Longest subtime,Shortest subtime\n");
             for (String query : queries) {
                 try {       
                     //measureQuery(query);
@@ -49,7 +50,8 @@ public class Main {
                 } catch (QueryEvaluationException e) {
                     System.out.println("Timeout took place in " + query);
                     fw.write(String.format("%s,%d,%d,%d,%d,%d,%d\n", 
-                                query.split("resources/")[1].replace(".sparql", "").toUpperCase(), -1, -1, -1, -1, -1, -1));
+                                query.
+                                split("resources/")[1].replace(".sparql", "").toUpperCase(), -1, -1, -1, -1, -1, -1));
                 }
             }
             
@@ -108,57 +110,83 @@ public class Main {
     }
 
     private static void measurePaginatedQuery(String query) throws IOException {
-        fw.write("Query,Mean,Standard Deviation,Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD),Number of queries (x̄),Number of queries (SD)\n");
         SPARQLTimer timer = new SPARQLTimer();
         System.out.println("\n>>>>>>>>>>><<<<<<<<<<");
         String queryName = query.split("resources/")[1].replace(".sparql", "").toUpperCase();
         System.out.println("Measuring query " + queryName);
 
-        double total = 0;
-        double[] values = new double[REPETITIONS];
-        double[] nodeValues = new double[REPETITIONS];
-        double[] queryValues = new double[REPETITIONS];
-        double longer = -1;
-        double shorter = Double.MAX_VALUE;
-        int totalnodes = 0;
-
-        int totalQueries = 0;
-
-        for(int i = 0; i < REPETITIONS; i++) {
+        for (String pm : parameters) {
+            System.out.println("PARAMETER: " + pm);
             String data = SPARQLReader.readFile(query);
-            timer.executePaginatedQuery(parameters, data, WIKIDATA_ENDPOINT);
-            double responseTime = timer.getTotalTime();
-            System.out.println("Iteration " + i + ": " + responseTime);
-            total += responseTime;
-            values[i] = responseTime;
-            longer = MathUtil.getLarger(longer, responseTime);
-            shorter = MathUtil.getShorter(shorter, responseTime);
-            int numberOfNodes = timer.getNumberOfNodes();
-            totalnodes += numberOfNodes;
-            nodeValues[i] = numberOfNodes;
-            int numberOfQueries = timer.getTotalQueries();
-            totalQueries += numberOfQueries;
-            queryValues[i] = numberOfQueries;
-        }   
-        double mean = MathUtil.getMean(total, REPETITIONS);
-        double sd = MathUtil.calculateSD(values, mean);
+            String parametrizedQuery = data.replace("{{ q }}", pm + "");
 
-        double meanNodes = MathUtil.getMean(totalnodes, REPETITIONS);
-        double sdNodes = MathUtil.calculateSD(nodeValues, meanNodes);
+            double total = 0;
+            double initialTime = 0;
+            double[] values = new double[REPETITIONS];
+            double[] nodeValues = new double[REPETITIONS];
+            double[] queryValues = new double[REPETITIONS];
+            double[] initialValues = new double[REPETITIONS];
+            double longer = -1;
+            double shorter = Double.MAX_VALUE;
+            double longestSubTime = -1;
+            double shortestSubTime = Double.MAX_VALUE;
+            int totalnodes = 0;
 
-        double meanQueries = MathUtil.getMean(totalQueries, REPETITIONS);
-        double sdQueries = MathUtil.calculateSD(queryValues, meanQueries);
+            int totalQueries = 0;
 
-        System.out.println("MEAN: " + mean);
-        System.out.println("STANDARD DEVIATION: " + sd);
-        System.out.println("LONGEST RESPONSE TIME: " + longer);
-        System.out.println("SHORTEST RESPONSE TIME: " + shorter);
-        System.out.println("NUMBER OF NODES (x̄): " + meanNodes);
-        System.out.println("NUMBER OF NODES (SD): " + sdNodes);
-        System.out.println("NUMBER OF QUERIES (x̄): " + meanQueries);
-        System.out.println("NUMBER OF QUERIES (SD): " + sdQueries);
-        fw.write(String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d\n", queryName, (int) mean, (int) sd, (int) longer, (int) shorter,
-            (int) meanNodes, (int) sdNodes,  (int) meanQueries, (int) sdQueries));
+            for(int i = 0; i < REPETITIONS; i++) {
+                timer.executePaginatedQuery(parametrizedQuery, WIKIDATA_ENDPOINT);
+                double responseTime = timer.getTotalTime();
+                System.out.println("Iteration " + i + ": " + responseTime);
+                System.out.println("Ended at offset " + timer.getOffset());
+                total += responseTime;
+                values[i] = responseTime;
+                longer = MathUtil.getLarger(longer, responseTime);
+                shorter = MathUtil.getShorter(shorter, responseTime);
+                longestSubTime = MathUtil.getLarger(longestSubTime, timer.getLongestTime());
+                shortestSubTime = MathUtil.getShorter(shortestSubTime, timer.getShortestTime());
+                int numberOfNodes = timer.getNumberOfNodes();
+                totalnodes += numberOfNodes;
+                nodeValues[i] = numberOfNodes;
+                System.out.println("Returned " + numberOfNodes + " nodes.");
+                int numberOfQueries = timer.getTotalQueries();
+                totalQueries += numberOfQueries;
+                queryValues[i] = numberOfQueries;
+                initialTime += timer.getInitialTime();
+                initialValues[i] = timer.getInitialTime();
+            }   
+            double mean = MathUtil.getMean(total, REPETITIONS);
+            double sd = MathUtil.calculateSD(values, mean);
+
+            double meanNodes = MathUtil.getMean(totalnodes, REPETITIONS);
+            double sdNodes = MathUtil.calculateSD(nodeValues, meanNodes);
+
+            double meanQueries = MathUtil.getMean(totalQueries, REPETITIONS);
+            double sdQueries = MathUtil.calculateSD(queryValues, meanQueries);
+
+            double meanInitial = MathUtil.getMean(initialTime, REPETITIONS);
+            double sdInitial = MathUtil.calculateSD(initialValues, meanInitial);
+
+            System.out.println("MEAN: " + mean);
+            System.out.println("STANDARD DEVIATION: " + sd);
+            System.out.println("INITIAL RESULTS TIME (x̄): " + meanInitial);
+            System.out.println("INITIAL RESULTS TIME (SD): " + sdInitial);
+            System.out.println("LONGEST RESPONSE TIME: " + longer);
+            System.out.println("SHORTEST RESPONSE TIME: " + shorter);
+            System.out.println("NUMBER OF NODES (x̄): " + meanNodes);
+            System.out.println("NUMBER OF NODES (SD): " + sdNodes);
+            System.out.println("NUMBER OF QUERIES (x̄): " + meanQueries);
+            System.out.println("NUMBER OF QUERIES (SD): " + sdQueries);
+            System.out.println("LONGEST SUBQUERY TIME: " + longestSubTime);
+            System.out.println("SHORTEST SUBQUERY TIME: " + shortestSubTime);
+            fw.write(String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", queryName, 
+                (int) mean, (int) sd, 
+                (int) meanInitial, (int) sdInitial,
+                (int) longer, (int) shorter,
+                (int) meanNodes, (int) sdNodes,  
+                (int) meanQueries, (int) sdQueries,
+                (int) longestSubTime, (int) shortestSubTime));
+        }
     }
 
     

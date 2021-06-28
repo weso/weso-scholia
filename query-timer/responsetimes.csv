@@ -1,5 +1,5 @@
-Query,Mean,Standard Deviation,Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD)
-LUXEMBOURG_AUTHORS,739,612,2576,509,440,0
-SPAIN_AUTHORS,-1,-1,-1,-1,-1,-1
-UNIVERSITY_OXFORD_TOPICS,4326,2878,8934,608,500,0
-UNIVERSITY_OVIEDO_TOPICS,1658,884,2821,578,500,0
+Query,Total time (x̄),Total time (SD),Initial Results Time (x̄),Initial Results Time (SD),Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD),Number of queries (x̄),Number of queries (SD),Longest subtime,Shortest subtime
+COUNTRY_AUTHORS,2860,972,1384,953,4022,1642,7,0,3,0,2730,495
+COUNTRY_AUTHORS,8130,407,750,73,8706,7837,461,10,9,0,1683,344
+COUNTRY_AUTHORS,450153,2446,1202,155,453537,447835,36239,477,164,0,10420,947
+COUNTRY_AUTHORS,869293,16748,1620,159,889110,848149,38171,1001,282,0,10789,1054

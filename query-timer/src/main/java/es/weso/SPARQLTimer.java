@@ -17,6 +17,11 @@ public class SPARQLTimer {
     private double totalTime;
     private int totalQueries;
     private int numberOfNodes;
+    private double initialTime;
+    private double longestTime;
+    private double shortestTime;
+    private int offset;
+    private int noResults;
 
     public void executeQuery(String query,String endpoint) throws QueryEvaluationException {
 
@@ -36,38 +41,35 @@ public class SPARQLTimer {
         System.out.println("NODES: " + numberOfNodes);
     }
 
-    public void executePaginatedQuery(List<String> parameters, 
-        String query,String endpoint) throws QueryEvaluationException {
-
-        for (String pm : parameters) {
-            System.out.println("PARAMETER: " + pm);
+    public void executePaginatedQuery(String query,String endpoint) throws QueryEvaluationException {
             totalTime = 0;
             numberOfNodes = 0;
             totalQueries = 0;
-            String parametrizedQuery = query.replace("{{ q }}", pm + "");
-            sequenceQueriesWithOffset(parametrizedQuery, 0, endpoint);
-            
-            System.out.println(totalTime + " s");
-            System.out.println(numberOfNodes  + " nodos");
-            System.out.println(totalQueries + " queries");
-        }
-
-        
+            initialTime = 0;
+            longestTime = 0;
+            shortestTime = Double.MAX_VALUE;
+            noResults = 0;
+            sequenceQueriesWithOffset(query, 0, endpoint);    
     }
 
-    private void sequenceQueriesWithOffset(String query, int offset, String endpoint) {
+    private void sequenceQueriesWithOffset(String query, int off, String endpoint) {
 
-        int i = offset;
+        offset = off;
 
         try {
-            int dataSize = queryWithOffset(query, i, endpoint);
-            if(dataSize > 0) {
-                i += 1000;
-                sequenceQueriesWithOffset(query, i, endpoint);
+            int dataSize = queryWithOffset(query, offset, endpoint);
+            if(dataSize == 0) {
+                noResults++;
             }
+            if(noResults < 5) {
+                offset += 1000;
+                sequenceQueriesWithOffset(query, offset, endpoint);
+            } 
+            
+                
         } catch (Exception ex) {
             System.out.println(ex);
-            sequenceQueriesWithOffset(query, i, endpoint);
+            sequenceQueriesWithOffset(query, offset, endpoint);
         }
     }
 
@@ -87,7 +89,18 @@ public class SPARQLTimer {
 
         stopCrono();
 
-        totalTime += getExecutionTime();
+        double exTime = getExecutionTime();
+
+        totalTime += exTime;
+        if(offset == 0) {
+            initialTime = exTime;
+        }
+        if(exTime < shortestTime) {
+            shortestTime = exTime;
+        }
+        if(exTime > longestTime) {
+            longestTime = exTime;
+        }
         numberOfNodes += bindingSets.size();
         totalQueries++;
 
@@ -117,5 +130,21 @@ public class SPARQLTimer {
 
     public int getTotalQueries() {
         return totalQueries;
+    }
+
+    public double getInitialTime() {
+        return initialTime;
+    }
+
+    public double getShortestTime() {
+        return shortestTime;
+    }
+
+    public double getLongestTime() {
+        return longestTime;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 }
