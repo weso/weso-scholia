@@ -47,4 +47,4 @@ if __name__ == '__main__':
             # Download the file and append a -2 at the end.
             # Once downloaded remove the previous file and rename the new one.
 
-        time.sleep(2)  # 12 hours in seconds is 43200
+        time.sleep(43200)  # 12 hours in seconds is 43200
