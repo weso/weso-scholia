@@ -356,7 +356,7 @@ if __name__ == '__main__':
     if not url or not out_file or not threads or not temp_folder:
         raise ValueError("Please provide required arguments.")
 
-    obj = Downloader(url, out_file, threads)
+    obj = Downloader(url, out_file, temp_folder, threads)
     # obj = Downloader("https://storage.googleapis.com/vimeo-test/work-at-vimeo-2.mp4", "out_file.mp4", "temp_folder/", 10)
     # obj = Downloader("http://i.imgur.com/z4d4kWk.jpg", "out_file.jpg", "temp_folder/", 3)
 
