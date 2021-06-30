@@ -30,7 +30,7 @@ class Downloader:
             self.chunk_range = chunk_range  # chunk range to download from server
             self.was_interrupted = was_interrupted  # flag to denote if the job was interrupted due to some error
 
-    def __init__(self, url=None, output_filename='out', number_of_threads=1):
+    def __init__(self, url=None, output_filename='out', temp_folder='temp', number_of_threads=1):
         """Constructor of Downloader class
         :param url: URL of file to be downloaded (optional)
         :param number_of_threads: Maximum number of threads (optional)
@@ -46,6 +46,7 @@ class Downloader:
         self.start_time = None  # start time to calculate overall download time
         self.end_time = None  # end time to calculate overall download time
         self.target_filename = output_filename  # name of a file to be downloaded
+        self.temp_folder = temp_folder
         self.status_refresh_rate = 2  # status will be refreshed after certain time (in seconds)
         self.download_durations = [
                                       None] * self.number_of_threads  # total download time for each thread (for benchmarking)
@@ -131,9 +132,11 @@ class Downloader:
 
         if self.if_byte_range:
             print("Yes")
-            if os.path.isdir("temp"):
-                shutil.rmtree("temp")
-            os.makedirs("temp")
+
+            # The tmp folder does not exists.
+            #if os.path.isdir("temp"):
+            #    shutil.rmtree("temp")
+            #os.makedirs("temp")
 
             self.fill_initial_queue()
 
@@ -157,12 +160,12 @@ class Downloader:
             print("Merging chunks into a single file ... ", end="")
             with open(self.target_filename, "ab") as target_file:
                 for i in range(self.number_of_threads):
-                    with open("temp/part" + str(i), "rb") as chunk_file:
+                    with open(f'{self.temp_folder}/part' + str(i), "rb") as chunk_file:
                         target_file.write(chunk_file.read())
             print("Done")
 
-            if os.path.isdir("temp"):
-                shutil.rmtree("temp")
+            if os.path.isdir(self.temp_folder):
+                shutil.rmtree(self.temp_folder)
 
         else:
             print("No")
@@ -200,17 +203,17 @@ class Downloader:
             try:
                 if item.was_interrupted:
                     time.sleep(1)
-                    if os.path.isfile("temp/part" + str(item.chunk_id)):
+                    if os.path.isfile(f'{self.temp_folder}/part' + str(item.chunk_id)):
                         self.append_write = "ab"
                         temp = item.chunk_range.split('-')
-                        item.chunk_range = str(int(temp[0]) + os.stat("temp/part" + str(item.chunk_id)).st_size) + '-' + \
+                        item.chunk_range = str(int(temp[0]) + os.stat(f'{self.temp_folder}/part' + str(item.chunk_id)).st_size) + '-' + \
                                            temp[1]
                     else:
                         self.append_write = "wb"
 
                 req = urllib.request.Request(self.get_url())
                 req.headers['Range'] = 'bytes={}'.format(item.chunk_range)
-                with urllib.request.urlopen(req) as response, open('temp/part' + str(item.chunk_id),
+                with urllib.request.urlopen(req) as response, open(f'{self.temp_folder}/part' + str(item.chunk_id),
                                                                    self.append_write) as out_file:
                     shutil.copyfileobj(response, out_file)
                 self.download_durations[item.chunk_id] = timeit.default_timer()
@@ -243,9 +246,9 @@ class Downloader:
         """
         self.download_status.clear()
         for i in range(self.number_of_threads):
-            if os.path.isfile("temp/part" + str(i)):
+            if os.path.isfile(f'{self.temp_folder}/part' + str(i)):
                 self.download_status.append(
-                    str(round(os.stat("temp/part" + str(i)).st_size / (self.file_size / self.number_of_threads) * 100,
+                    str(round(os.stat(f'{self.temp_folder}/part' + str(i)).st_size / (self.file_size / self.number_of_threads) * 100,
                               2)) + "%")
             else:
                 self.download_status.append("0.00%")
@@ -339,6 +342,7 @@ if __name__ == '__main__':
     url = ""
     threads = ""
     out_file = ""
+    temp_folder = ""
     arguments_list = getopts(sys.argv)
     if '-url' in arguments_list:
         url = arguments_list['-url']
@@ -346,13 +350,15 @@ if __name__ == '__main__':
         threads = int(arguments_list['-threads'])
     if '-out' in arguments_list:
         out_file = arguments_list['-out']
+    if '-temp' in arguments_list:
+        temp_folder = arguments_list['-temp']
 
-    if not url or not out_file or not threads:
+    if not url or not out_file or not threads or not temp_folder:
         raise ValueError("Please provide required arguments.")
 
     obj = Downloader(url, out_file, threads)
-    # obj = Downloader("https://storage.googleapis.com/vimeo-test/work-at-vimeo-2.mp4", "out_file.mp4", 10)
-    # obj = Downloader("http://i.imgur.com/z4d4kWk.jpg", "out_file.jpg" 3)
+    # obj = Downloader("https://storage.googleapis.com/vimeo-test/work-at-vimeo-2.mp4", "out_file.mp4", "temp_folder/", 10)
+    # obj = Downloader("http://i.imgur.com/z4d4kWk.jpg", "out_file.jpg", "temp_folder/", 3)
 
     obj.start_download()
     print(obj.get_metadata())
