@@ -1,0 +1,14 @@
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+
+SELECT
+  ?author
+WITH {
+  SELECT DISTINCT ?author WHERE {
+    ?author wdt:P27 | wdt:P1416/wdt:P17 | wdt:P108/wdt:P17 wd:Q32 .
+  }
+} AS %authors
+WHERE {
+    INCLUDE %authors
+  }
+

@@ -19,7 +19,7 @@ public class Main {
     private static FileWriter fw;
 
     private final static List<String> queries = new ArrayList<String>(Arrays.asList(
-    "/query-timer/src/main/resources/country_authors.sparql"
+    "/query-timer/src/main/resources/country_authors_sb1.sparql"
     //"/query-timer/src/main/resources/country_organizations.sparql"
     //"/query-timer/src/main/resources/luxembourg_authors.sparql",
     //"/query-timer/src/main/resources/spain_authors.sparql",
@@ -38,8 +38,8 @@ public class Main {
 
     public static void main(String[] args){
         try {
-            fw = new FileWriter("./query-timer/responsetimes2.csv");
-            fw.write("Query,Total time (x̄),Total time (SD),Initial Results Time (x̄),Initial Results Time (SD),Longest Time,Shortest Time,Number of nodes (x̄),Number of nodes (SD),Number of queries (x̄),Number of queries (SD),Longest subtime,Shortest subtime\n");
+            fw = new FileWriter("./query-timer/responsetimes3.csv");
+            fw.write("Query,Total time (x̄),Total time (SD),Initial Results Time (x̄),Initial Results Time (SD),Longest Time,Shortest Time,Number of nodes (x̄),Number of un. nodes (x̄),Number of un. nodes (SD),Number of queries (x̄),Number of queries (SD),Longest subtime,Shortest subtime\n");
             for (String query : queries) {
                 try {       
                     //measureQuery(query);
@@ -131,10 +131,12 @@ public class Main {
             double longestSubTime = -1;
             double shortestSubTime = Double.MAX_VALUE;
             int totalnodes = 0;
+            int totalUnnodes = 0;
 
             int totalQueries = 0;
 
             for(int i = 0; i < REPETITIONS; i++) {
+                
                 timer.executePaginatedQuery(parametrizedQuery, WIKIDATA_ENDPOINT);
                 double responseTime = timer.getTotalTime();
                 System.out.println("Iteration " + i + ": " + responseTime);
@@ -145,10 +147,11 @@ public class Main {
                 shorter = MathUtil.getShorter(shorter, responseTime);
                 longestSubTime = MathUtil.getLarger(longestSubTime, timer.getLongestTime());
                 shortestSubTime = MathUtil.getShorter(shortestSubTime, timer.getShortestTime());
-                int numberOfNodes = timer.getNumberOfNodes();
-                totalnodes += numberOfNodes;
-                nodeValues[i] = numberOfNodes;
-                System.out.println("Returned " + numberOfNodes + " nodes.");
+                int numberOfUnNodes = timer.getUniqueNodes();
+                totalnodes += timer.getNumberOfNodes();
+                totalUnnodes += numberOfUnNodes;
+                nodeValues[i] = numberOfUnNodes;
+                System.out.println("Returned " + numberOfUnNodes + " unique nodes.");
                 int numberOfQueries = timer.getTotalQueries();
                 totalQueries += numberOfQueries;
                 queryValues[i] = numberOfQueries;
@@ -159,7 +162,8 @@ public class Main {
             double sd = MathUtil.calculateSD(values, mean);
 
             double meanNodes = MathUtil.getMean(totalnodes, REPETITIONS);
-            double sdNodes = MathUtil.calculateSD(nodeValues, meanNodes);
+            double meanUnNodes = MathUtil.getMean(totalUnnodes, REPETITIONS);
+            double sdNodes = MathUtil.calculateSD(nodeValues, meanUnNodes);
 
             double meanQueries = MathUtil.getMean(totalQueries, REPETITIONS);
             double sdQueries = MathUtil.calculateSD(queryValues, meanQueries);
@@ -174,16 +178,17 @@ public class Main {
             System.out.println("LONGEST RESPONSE TIME: " + longer);
             System.out.println("SHORTEST RESPONSE TIME: " + shorter);
             System.out.println("NUMBER OF NODES (x̄): " + meanNodes);
-            System.out.println("NUMBER OF NODES (SD): " + sdNodes);
+            System.out.println("NUMBER OF UNIQUE NODES (x̄): " + meanUnNodes);
+            System.out.println("NUMBER OF UNIQUE NODES (SD): " + sdNodes);
             System.out.println("NUMBER OF QUERIES (x̄): " + meanQueries);
             System.out.println("NUMBER OF QUERIES (SD): " + sdQueries);
             System.out.println("LONGEST SUBQUERY TIME: " + longestSubTime);
             System.out.println("SHORTEST SUBQUERY TIME: " + shortestSubTime);
-            fw.write(String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", queryName, 
+            fw.write(String.format("%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n", queryName, 
                 (int) mean, (int) sd, 
                 (int) meanInitial, (int) sdInitial,
                 (int) longer, (int) shorter,
-                (int) meanNodes, (int) sdNodes,  
+                (int) meanNodes, (int) meanUnNodes, (int) sdNodes,  
                 (int) meanQueries, (int) sdQueries,
                 (int) longestSubTime, (int) shortestSubTime));
         }

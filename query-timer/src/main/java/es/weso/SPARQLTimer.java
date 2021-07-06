@@ -1,5 +1,6 @@
 package es.weso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.rdf4j.query.BindingSet;
@@ -22,6 +23,7 @@ public class SPARQLTimer {
     private double shortestTime;
     private int offset;
     private int noResults;
+    private List<BindingSet> uniqueNodes;
 
     public void executeQuery(String query,String endpoint) throws QueryEvaluationException {
 
@@ -49,6 +51,7 @@ public class SPARQLTimer {
             longestTime = 0;
             shortestTime = Double.MAX_VALUE;
             noResults = 0;
+            uniqueNodes = new ArrayList<BindingSet>();
             sequenceQueriesWithOffset(query, 0, endpoint);    
     }
 
@@ -61,7 +64,7 @@ public class SPARQLTimer {
             if(dataSize == 0) {
                 noResults++;
             }
-            if(noResults < 5) {
+            if(noResults < 10) {
                 offset += 1000;
                 sequenceQueriesWithOffset(query, offset, endpoint);
             } 
@@ -104,7 +107,17 @@ public class SPARQLTimer {
         numberOfNodes += bindingSets.size();
         totalQueries++;
 
+        saveUnique(bindingSets);
+
         return bindingSets.size();
+    }
+
+    private void saveUnique(List<BindingSet> results) {
+        for (BindingSet res : results) {
+            if(!uniqueNodes.contains(res)) {
+                uniqueNodes.add(res);
+            }
+        }
     }
 
 
@@ -146,5 +159,9 @@ public class SPARQLTimer {
 
     public int getOffset() {
         return offset;
+    }
+
+    public int getUniqueNodes() {
+        return uniqueNodes.size();
     }
 }

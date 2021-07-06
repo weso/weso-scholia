@@ -1,0 +1,28 @@
+SELECT
+  ?number_of_authors
+  ?number_of_works
+  ?organization ?organizationLabel (?organization as ?hiddenId)
+WITH {
+  SELECT DISTINCT ?organization WHERE {
+    ?organization wdt:P17 wd:{{ q }} .
+  }
+  LIMIT 1000
+  OFFSET {w}
+} AS %orgs
+WITH {  
+  SELECT
+    ?organization
+    (COUNT(DISTINCT ?author) AS ?number_of_authors)
+    (COUNT(DISTINCT ?work) AS ?number_of_works)
+  WHERE {
+    INCLUDE %orgs
+    ?author wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?organization .
+    ?work wdt:P50 ?author .
+  }
+  GROUP BY ?organization 
+} AS %results
+WHERE {
+  INCLUDE %results
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh". }
+}
+ORDER BY DESC(?number_of_authors) DESC(?number_of_works)

@@ -1,0 +1,23 @@
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+PREFIX wd: <http://www.wikidata.org/entity/>
+ PREFIX wikibase: <http://wikiba.se/ontology#>
+
+
+
+  SELECT
+    ?author 
+    (COUNT(DISTINCT ?citing_work) AS ?number_of_citing_works)
+    (SAMPLE(?organization_) AS ?organization)
+    (SAMPLE(?work) AS ?example_work)
+  WHERE {
+    INCLUDE %ss1
+    SERVICE <https://query.wikidata.org/sparql> {
+    ?work wdt:P50 ?author .
+    OPTIONAL { ?citing_work wdt:P2860 ?work . }
+    OPTIONAL {
+      ?author wdt:P1416 | wdt:P108 ?organization_ .
+      ?organization_ wdt:P17 wd:Q32
+    }
+      }
+  }
+  GROUP BY ?author 

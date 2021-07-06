@@ -1,0 +1,5 @@
+Query,Total time (x̄),Total time (SD),Initial Results Time (x̄),Initial Results Time (SD),Longest Time,Shortest Time,Number of nodes (x̄),Number of un. nodes (x̄),Number of un. nodes (SD),Number of queries (x̄),Number of queries (SD),Longest subtime,Shortest subtime
+COUNTRY_AUTHORS_SB1,7109,752,1084,415,8123,6321,0,0,0,10,0,1647,324
+COUNTRY_AUTHORS_SB1,18992,7555,2737,1627,27678,9260,230,128,22,16,0,4818,305
+COUNTRY_AUTHORS_SB1,666692,40156,940,228,721323,625944,12249,8720,517,159,4,24408,762
+COUNTRY_AUTHORS_SB1,757562,45116,4315,2155,812835,702322,11745,8262,37,177,13,21899,908
