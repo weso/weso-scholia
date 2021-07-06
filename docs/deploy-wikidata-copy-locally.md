@@ -2,7 +2,7 @@
 | ------ | -------- |
 | **Reproducibility:** | 4/5 |
 | **Time:** | 5-6 days |
-| **Resources:** | 16 Cores, 100 Gb Memory, 1Tb Disk and Ethernet |
+| **Resources:** | 16 Cores, 100 Gb Memory, 1.125Gb Disk and Ethernet |
 | **O.S.:** | Rocky Linux (RHEL) |
 | **Source:** | [https://addshore.com/2019/10/your-own-wikidata-query-service-with-no-limits/](https://addshore.com/2019/10/your-own-wikidata-query-service-with-no-limits/) |
 
