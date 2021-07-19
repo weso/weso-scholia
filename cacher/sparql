@@ -1,0 +1,191 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<sparql xmlns='http://www.w3.org/2005/sparql-results#'>
+	<head>
+		<variable name='number_of_citing_works'/>
+		<variable name='author'/>
+		<variable name='authorLabel'/>
+		<variable name='hiddenId'/>
+		<variable name='organization'/>
+		<variable name='organizationLabel'/>
+		<variable name='example_work'/>
+		<variable name='example_workLabel'/>
+	</head>
+	<results>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q59689248</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>13</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q85372340</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>André S Afonso</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Extraordinary growth in tiger sharks Galeocerdo cuvier from the South Atlantic Ocean</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q59689248</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q30296115</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>Bimini Biological Field Station Foundation</literal>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q95975532</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q98897198</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Bradley Weiler</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Mediocremonas mediterraneus, a New Member within the Developea</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q95975532</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q30296105</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>Cape Eleuthera Institute</literal>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q104049</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>0</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q7750829</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Sidney Poitier</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>The Measure of a Man: A Spiritual Autobiography</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q104049</uri>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q98154772</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>0</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q98154773</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Shamel Rolle Sands</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Does Being a Visible Minority Matter? Predictors of Internationally Educated Nurses' Workplace Integration</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q98154772</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q5146860</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>College of The Bahamas</literal>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q97653192</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>0</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q98733630</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Maurits van Zinnicq Bergmann</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Author Correction: Global status and conservation potential of reef sharks</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q97653192</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q30296115</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>Bimini Biological Field Station Foundation</literal>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q91583933</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>0</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q64064840</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Paul A De Luca</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Does body size predict the buzz-pollination frequencies used by bees?</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q91583933</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q5146860</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>College of The Bahamas</literal>
+			</binding>
+		</result>
+		<result>
+			<binding name='author'>
+				<uri>http://www.wikidata.org/entity/Q90711485</uri>
+			</binding>
+			<binding name='number_of_citing_works'>
+				<literal datatype='http://www.w3.org/2001/XMLSchema#integer'>0</literal>
+			</binding>
+			<binding name='example_work'>
+				<uri>http://www.wikidata.org/entity/Q90711490</uri>
+			</binding>
+			<binding name='authorLabel'>
+				<literal xml:lang='en'>Nathan J Dawson</literal>
+			</binding>
+			<binding name='example_workLabel'>
+				<literal xml:lang='en'>Recovery of photodegraded rhodamine 6g in ester-containing polymer matrices</literal>
+			</binding>
+			<binding name='hiddenId'>
+				<uri>http://www.wikidata.org/entity/Q90711485</uri>
+			</binding>
+			<binding name='organization'>
+				<uri>http://www.wikidata.org/entity/Q5146860</uri>
+			</binding>
+			<binding name='organizationLabel'>
+				<literal xml:lang='en'>College of The Bahamas</literal>
+			</binding>
+		</result>
+	</results>
+</sparql>
