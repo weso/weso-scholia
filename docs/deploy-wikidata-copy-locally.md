@@ -97,7 +97,7 @@ docker exec -it <contianer-id> bash
 And, once inside:
 
 ```bash
-/wdqs/loadData.sh -n wdq -d <local-work-dir>/mungeOut
+/wdqs/loadData.sh -n wdq -d /mnt/disks/ssddata/mungeOut
 ```
 
 This step might take up to 5 days. So please run it so you can detach form the container at any point without stopping the execution.
