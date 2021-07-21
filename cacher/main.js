@@ -1,52 +1,68 @@
 const config = require('./queries.json')
 const getJSON = require('get-json')
 const fetch = require('node-fetch');
+const repositorio = require("./repositorio.js");
 
 function executeQueries() {
-    config.forEach(q => executePaginatedQuery(q.query, q.parameters))
+    config.forEach(q => executePaginatedQuery(q.query, q.parameters, q.query_name))
 
 }
 
-function executePaginatedQuery(query, parameters) {
+function executePaginatedQuery(query, parameters, qName) {
     parameters.forEach(function(p) {
         parametrizedQuery = query.replace(/{{ q }}/g, p);
-        sparqlLimits(parametrizedQuery)
+        sparqlLimits(parametrizedQuery, p, qName)
     });
 
 }
 
-function sparqlLimits(sparql) {
+async function sparqlLimits(sparql, param, qName) {
     var url = "https://query.wikidata.org/sparql?query=" + 
         encodeURIComponent(sparql.replace(/\{w\}/, "0")) + '&format=json';
 
-    var extractedData = [];
+    var extractedData = {"data": [], "parameter": param};
 
-    fetch(url)
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'User-Agent': 'WesoScholiaCacher/0.1 (https://github.com/weso/weso-scholia)'
+        }})
     .then(res => res.json())
-    .then((json) => {
+    .then(async (json) => {
         var simpleData = sparqlDataToSimpleData(json);
         
         simpleData.data.forEach(function(row) {
-            extractedData.push(row.hiddenId)
+            extractedData.data.push(row)
         });
 
-        sequenceQueriesWithOffset(sparql, 1000, extractedData);
+        await sequenceQueriesWithOffset(sparql, 1000, extractedData);
+        
+    })
+    .then(() => {
+        repositorio.conexion()
+            .then((db) => repositorio.removeResults(db, {"parameter": param}, qName));
+    })
+    .then(() => {
+        repositorio.conexion()
+            .then((db) => repositorio.insertResults(db, extractedData, qName));
     });
+
+    
 }
 
-function sequenceQueriesWithOffset(sparql, offset, extractedData) {
+async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
     let i = offset;
-    queryWithOffset(sparql, offset, extractedData).then(function(data) {
-        console.log(extractedData.length);
+    await queryWithOffset(sparql, offset, extractedData).then(async function(data) {
+        console.log(extractedData.data.length);
         console.log(offset)
         if(data.length > 0) {
             i += 1000;
-            sequenceQueriesWithOffset(sparql, i, extractedData);
+            await sequenceQueriesWithOffset(sparql, i, extractedData);
         }
-    }).catch(e => {
+    }).catch(async (e) => {
         console.log(offset)
         //console.log(e);
-        sequenceQueriesWithOffset(sparql, i, extractedData);
+        await sequenceQueriesWithOffset(sparql, i, extractedData);
     });
     
 }
@@ -55,15 +71,20 @@ async function queryWithOffset(sparql, offset, extractedData) {
     let url = "https://query.wikidata.org/sparql?query=" + 
         encodeURIComponent(sparql.replace(/\{w\}/, offset.toString())) + '&format=json';
 
-    return fetch(url)
-    .then(res => res.json())
+    return await fetch(url, {
+        method: 'GET',
+        headers: {
+            'User-Agent': 'WesoScholiaCacher/0.1 (https://github.com/weso/weso-scholia)'
+        }
+    })
+    .then((res) =>res.json())
     .then((json) => {
         var dataToAdd = [];
         var simpleData = sparqlDataToSimpleData(json);
 
         simpleData.data.forEach(function(row) {
-            if(!extractedData.includes(row.hiddenId)) {
-                extractedData.push(row.hiddenId);
+            if(!existsId(extractedData.data, row.hiddenId)) {
+                extractedData.data.push(row);
                 dataToAdd.push(row);             
             }
         });
@@ -87,6 +108,12 @@ function sparqlDataToSimpleData(response) {
 	convertedData.push(convertedRow);
     }
     return {data: convertedData, columns: columns};
+}
+
+function existsId(collection, id) {
+    return collection.some(function(row) {
+        return row.hiddenId === id
+    });
 }
 
 executeQueries();

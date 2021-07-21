@@ -9,7 +9,7 @@
   "author": "Fidalgo",
   "dependencies": {
     "get-json": "^1.0.1",
-    "mongodb": "^4.0.0",
+    "mongodb": "^2.2.33",
     "node-fetch": "^2.6.1"
   }
 }
