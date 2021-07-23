@@ -13,7 +13,7 @@ module.exports = {
             });
         });
     },
-    insertResults : async (db, results, col) => {
+    insertResults : async (db, results, col, t0) => {
         return new Promise((resolve, reject) => {
             let collection = db.collection(col);
             collection.insert(results, (err, result) => {
@@ -22,6 +22,7 @@ module.exports = {
                     resolve(null);
                 } else {
                     console.log("Saved successfully")
+                    console.log("Elapsed time: " + (Date.now() - t0) + " milliseconds.")
                     resolve(true);
                 }
                 db.close();

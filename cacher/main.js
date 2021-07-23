@@ -3,17 +3,24 @@ const getJSON = require('get-json')
 const fetch = require('node-fetch');
 const repositorio = require("./repositorio.js");
 
-function executeQueries() {
-    config.forEach(q => executePaginatedQuery(q.query, q.parameters, q.query_name))
+let noResults = 0;
+let startTime = 0;
 
+async function executeQueries() {
+    startTime = Date.now();
+    //config.forEach(q => executePaginatedQuery(q.query, q.parameters, q.query_name))
+    for (const q of config) {
+        await executePaginatedQuery(q.query, q.parameters, q.query_name)
+      }
+    let t1 = Date.now();
+    console.log("Synchronous time: " + (t1 - startTime) + " milliseconds.")
 }
 
-function executePaginatedQuery(query, parameters, qName) {
-    parameters.forEach(function(p) {
+async function executePaginatedQuery(query, parameters, qName) {
+    for (const p of parameters) {
         parametrizedQuery = query.replace(/{{ q }}/g, p);
-        sparqlLimits(parametrizedQuery, p, qName)
-    });
-
+        await sparqlLimits(parametrizedQuery, p, qName)
+      }
 }
 
 async function sparqlLimits(sparql, param, qName) {
@@ -21,19 +28,23 @@ async function sparqlLimits(sparql, param, qName) {
         encodeURIComponent(sparql.replace(/\{w\}/, "0")) + '&format=json';
 
     var extractedData = {"data": [], "parameter": param};
+    noResults = 0;
+    console.log(param);
 
-    fetch(url, {
+    await fetch(url, {
         method: 'GET',
         headers: {
             'User-Agent': 'WesoScholiaCacher/0.1 (https://github.com/weso/weso-scholia)'
         }})
     .then(res => res.json())
     .then(async (json) => {
-        var simpleData = sparqlDataToSimpleData(json);
+        //var simpleData = sparqlDataToSimpleData(json);
         
-        simpleData.data.forEach(function(row) {
-            extractedData.data.push(row)
-        });
+        //simpleData.data.forEach(function(row) {
+        //    extractedData.data.push(row)
+        //});
+
+        extractedData.data = json;
 
         await sequenceQueriesWithOffset(sparql, 1000, extractedData);
         
@@ -44,18 +55,20 @@ async function sparqlLimits(sparql, param, qName) {
     })
     .then(() => {
         repositorio.conexion()
-            .then((db) => repositorio.insertResults(db, extractedData, qName));
+            .then((db) => repositorio.insertResults(db, extractedData, qName, startTime));
     });
-
     
 }
 
 async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
     let i = offset;
-    await queryWithOffset(sparql, offset, extractedData).then(async function(data) {
-        console.log(extractedData.data.length);
-        console.log(offset)
-        if(data.length > 0) {
+    await queryWithOffset(sparql, offset, extractedData).then(async function(quantity) {
+        console.log("Nodes: " + extractedData.data.results.bindings.length);
+        console.log("Offset " + offset)
+        if(quantity == 0) {
+            noResults++;
+        }
+        if(noResults < 5) {
             i += 1000;
             await sequenceQueriesWithOffset(sparql, i, extractedData);
         }
@@ -79,17 +92,17 @@ async function queryWithOffset(sparql, offset, extractedData) {
     })
     .then((res) =>res.json())
     .then((json) => {
-        var dataToAdd = [];
-        var simpleData = sparqlDataToSimpleData(json);
+        var quantity = 0;
+        //var simpleData = sparqlDataToSimpleData(json);
 
-        simpleData.data.forEach(function(row) {
-            if(!existsId(extractedData.data, row.hiddenId)) {
-                extractedData.data.push(row);
-                dataToAdd.push(row);             
-            }
+        json.results.bindings.forEach(function(row) {
+            //if(!existsId(extractedData.data.results.bindings, row.hiddenId)) {
+                extractedData.data.results.bindings.push(row);
+                quantity++;         
+            //}
         });
         
-        return dataToAdd;
+        return quantity;
     }); 
     
     
