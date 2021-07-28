@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  mongo-scholia:
+    image: mongo-scholia
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment: 
+        DB_CONNECTION: "mongodb+srv://pablo:weso1234@cluster0.iygmf.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
