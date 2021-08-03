@@ -3,6 +3,7 @@ const fetch = require('node-fetch');
 const repositorio = require("./repositorio.js");
 
 let startTime = 0;
+let qstartTime = 0;
 let subsetting_size = 0;
 
 async function executeQueries() {
@@ -23,6 +24,7 @@ async function executePaginatedQuery(query, parameters, qName, cQuery) {
 }
 
 async function sparqlLimits(sparql, param, qName, cQuery) {
+    qstartTime = Date.now();
     var count_url = "https://query.wikidata.org/sparql?query=" + 
         encodeURIComponent(cQuery) + '&format=json';
 
@@ -65,6 +67,7 @@ async function sparqlLimits(sparql, param, qName, cQuery) {
     .then(() => {
         repositorio.conexion()
             .then((db) => repositorio.insertResults(db, extractedData, qName, startTime));
+        console.log("Tiempo: " + (Date.now() - qstartTime))
     });
     
 }
@@ -102,10 +105,10 @@ async function queryWithOffset(sparql, offset, extractedData) {
 
         json.results.bindings.forEach(function(row) {
             //Comment condition if ordered subsetting
-            if(!existsId(extractedData.data.results.bindings, row.hiddenId)) {
+            //if(!existsId(extractedData.data.results.bindings, row.hiddenId)) {
                 extractedData.data.results.bindings.push(row);
                 quantity++;         
-            }
+            //}
         });
         
         return quantity;

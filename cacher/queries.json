@@ -4,33 +4,7 @@
       "count_query": "SELECT (COUNT(DISTINCT ?author) as ?subsetting_size) WHERE {\n?author wdt:P27 | wdt:P1416/wdt:P17 | wdt:P108/wdt:P17 wd:{{ q }} .\n}",
       "query_name": "country_authors",
       "parameters": [
-        "Q183",
-        "Q29",
-        "Q31",
-        "Q142",
-        "Q38",
-        "Q32",
-        "Q55",
-        "Q35",
-        "Q27",
-        "Q41",
-        "Q45",
-        "Q33",
-        "Q40",
-        "Q34",
-        "Q191",
-        "Q211",
-        "Q37",
-        "Q233",
-        "Q36",
-        "Q214",
-        "Q215",
-        "Q213",
-        "Q28",
-        "Q229",
-        "Q219",
-        "Q218",
-        "Q224"
+        "Q29"
       ]
     }
 ]
