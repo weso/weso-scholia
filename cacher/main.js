@@ -77,7 +77,7 @@ async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
     await queryWithOffset(sparql, offset, extractedData).then(async function(quantity) {
         console.log("Nodes: " + extractedData.data.results.bindings.length);
         console.log("Offset " + offset)
-        if(offset < 150000) {
+        if(offset < subsetting_size) {
             i += 1000;
             await sequenceQueriesWithOffset(sparql, i, extractedData);
         }
