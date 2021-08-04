@@ -60,13 +60,13 @@ async function sparqlLimits(sparql, param, qName, cQuery) {
         await sequenceQueriesWithOffset(sparql, 1000, extractedData);
         
     })
-    .then(() => {
-        repositorio.conexion()
-            .then((db) => repositorio.removeResults(db, {"parameter": param}, qName));
+    .then(async () => {
+        await repositorio.conexion()
+            .then((db) => repositorio.removeResults(db, {"filename": qName + "_" + param}, qName));
     })
     .then(() => {
         repositorio.conexion()
-            .then((db) => repositorio.insertResults(db, extractedData, qName, startTime));
+            .then((gfs) => repositorio.insertResults(gfs, extractedData, qName, startTime));
         console.log("Tiempo: " + (Date.now() - qstartTime))
     });
     
@@ -77,7 +77,7 @@ async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
     await queryWithOffset(sparql, offset, extractedData).then(async function(quantity) {
         console.log("Nodes: " + extractedData.data.results.bindings.length);
         console.log("Offset " + offset)
-        if(offset < subsetting_size) {
+        if(offset < 150000) {
             i += 1000;
             await sequenceQueriesWithOffset(sparql, i, extractedData);
         }
