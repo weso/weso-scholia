@@ -5,26 +5,28 @@ const repositorio = require("./repositorio.js");
 let startTime = 0;
 let qstartTime = 0;
 let subsetting_size = 0;
+let querySize = 0;
 
 async function executeQueries() {
     startTime = Date.now();
     for (const q of config) {
-        await executePaginatedQuery(q.query, q.parameters, q.query_name, q.count_query)
+        await executePaginatedQuery(q.query, q.parameters, q.query_name, q.count_query, q.offset)
     }
     let t1 = Date.now();
     console.log("Synchronous time: " + (t1 - startTime) + " milliseconds.")
 }
 
-async function executePaginatedQuery(query, parameters, qName, cQuery) {
+async function executePaginatedQuery(query, parameters, qName, cQuery, off) {
     for (const p of parameters) {
         parametrizedQuery = query.replace(/{{ q }}/g, p);
         parametrizedCQuery = cQuery.replace(/{{ q }}/g, p);
-        await sparqlLimits(parametrizedQuery, p, qName, parametrizedCQuery)
+        await sparqlLimits(parametrizedQuery, p, qName, parametrizedCQuery, off)
     }
 }
 
-async function sparqlLimits(sparql, param, qName, cQuery) {
+async function sparqlLimits(sparql, param, qName, cQuery, off) {
     qstartTime = Date.now();
+    querySize = off;
     var count_url = "https://query.wikidata.org/sparql?query=" +
         encodeURIComponent(cQuery) + '&format=json';
 
@@ -62,7 +64,7 @@ async function sparqlLimits(sparql, param, qName, cQuery) {
 
             extractedData.data = json;
 
-            await sequenceQueriesWithOffset(sparql, 1000, extractedData);
+            await sequenceQueriesWithOffset(sparql, off, extractedData);
 
         })
         .then(async () => {
@@ -85,7 +87,7 @@ async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
         console.log("Nodes: " + extractedData.data.results.bindings.length);
         console.log("Offset " + offset)
         if (offset < subsetting_size) {
-            i += 1000;
+            i += querySize;
             await sequenceQueriesWithOffset(sparql, i, extractedData);
         }
     }).catch(async (e) => {
