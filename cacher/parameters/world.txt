@@ -1,10 +1,4 @@
-[
-    {
-      "query": "SELECT\n?number_of_authors\n?number_of_works\n?organization ?organizationLabel\nWITH {\nSELECT\n?organization\nWHERE {\n?organization wdt:P17 wd:{{ q }} .\n}\nORDER BY ?organization\nLIMIT 1000\nOFFSET {w}\n} AS %orgs\nWITH {\nSELECT\n?organization\n(COUNT(DISTINCT ?author) AS ?number_of_authors)\n(COUNT(DISTINCT ?work) AS ?number_of_works)\nWHERE {\nINCLUDE %orgs\n?author wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?organization .\n?work wdt:P50 ?author .\n}\nGROUP BY ?organization\n} AS %results\nWHERE {\nINCLUDE %results\nSERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,es,fr,jp,nl,no,ru,sv,zh\". }\n}\nORDER BY DESC(?number_of_authors) DESC(?number_of_works)",
-      "count_query": "SELECT (COUNT(DISTINCT ?org) as ?subsetting_size) WHERE {\n?org wdt:P17 wd:{{ q }} .\n}",
-      "query_name": "country_organizations",
-      "parameters": [
-        "Q29",
+"Q29",
 "Q183",
 "Q31",
 "Q142",
@@ -194,6 +188,3 @@
 "Q974",
 "Q977",
 "Q986"
-      ]
-    }
-]
