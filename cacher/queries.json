@@ -3,7 +3,7 @@
       "query": "SELECT ?coorganization ?coorganizationLabel ?geocoordinates ?example_coauthor ?example_coauthorLabel ?example_work ?example_workLabel\nWITH {\nSELECT\n?organization\nWHERE {\n?organization wdt:P17 wd:{{ q }}.\n}\nORDER BY ?organization\nLIMIT 100\nOFFSET {w}\n} AS %orgs\nWITH {\nSELECT\n?author\nWHERE {\nINCLUDE %orgs\n?author wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?organization .\n}\nLIMIT 100\n} AS %authors\nWITH {\nSELECT\n?coorganization\n(SAMPLE(?geocoordinates_) AS ?geocoordinates)\n(SAMPLE(?coauthor) AS ?example_coauthor)\n(SAMPLE(?work) AS ?example_work)\nWHERE {\nINCLUDE %authors\n?work wdt:P50 ?author, ?coauthor .\n?coauthor wdt:P108 | wdt:P463 | wdt:P1416/wdt:P361* ?coorganization .\nFILTER NOT EXISTS { ?coorganization wdt:P17 wd:{{ q }} }\n?coorganization wdt:P625 ?geocoordinates_ .\n}\nGROUP BY ?coorganization\n} AS %results\nWHERE {\nINCLUDE %results\nSERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en\". }\n}",
       "count_query": "SELECT (COUNT(DISTINCT ?org) as ?subsetting_size) WHERE {\n?org wdt:P17 wd:{{ q }} .\n}",
       "query_name": "country_co-organizations",
-      "offset": 1000,
+      "offset": 100,
       "parameters": [
         "Q29",
 "Q183",
