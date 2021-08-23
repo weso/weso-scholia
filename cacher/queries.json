@@ -1,8 +1,8 @@
 [
     {
-      "query": "SELECT\n?location ?locationLabel\n?work ?workLabel\n?geo\n?layer\nWITH {\nSELECT ?location ?work ?geo ?type WHERE {\n?location wdt:P17 wd:{{ q }} .\n?location wdt:P159? / wdt:P625 ?geo.\n?work wdt:P921 ?location .\nFILTER NOT EXISTS { ?work wdt:P31 wd:Q17329259 }\n}\nORDER BY ?work\nLIMIT 1000\nOFFSET {w}\n} AS %results\nWHERE {\nINCLUDE %results\nOPTIONAL {\n?work wdt:P31 / rdfs:label ?layer .\nFILTER (LANG(?layer) = 'en')\n}\nSERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}",
-        "count_query": "SELECT (COUNT(?work) as ?subsetting_size) WHERE {\n?loc wdt:P17 wd:{{ q }} .\n?loc wdt:P159? / wdt:P625 ?geo.\n?loc ^wdt:P921 ?work .\n}",
-      "query_name": "country_locations-as-topics",
+      "query": "SELECT\n?location ?locationLabel\n?work ?workLabel\n?geo\n?layer\nWITH {\nSELECT DISTINCT ?location ?work ?geo ?layer WHERE {\n?location wdt:P17 wd:{{ q }} .\n?location wdt:P159? / wdt:P625 ?geo.\n?work wdt:P840 ?location .\nFILTER NOT EXISTS { ?work wdt:P31 wd:Q17329259 }\nOPTIONAL { ?work wdt:P31 / rdfs:label ?layer . FILTER (LANG(?layer) = 'en') }\n}\nORDER BY ?work\nLIMIT 1000\nOFFSET {w}\n} AS %results\nWHERE {\nINCLUDE %results\nSERVICE wikibase:label { bd:serviceParam wikibase:language \"[AUTO_LANGUAGE],en,da,de,es,fr,jp,nl,no,ru,sv,zh\". }\n}",
+      "count_query": "SELECT (COUNT(?work) as ?subsetting_size) WHERE {\n?loc wdt:P17 wd:{{ q }} .\n?loc wdt:P159? / wdt:P625 ?geo.\n?loc ^wdt:P840 ?work .\n}",
+      "query_name": "country_narrative-locations",
       "offset": 1000,
       "parameters": [
 "Q29",
