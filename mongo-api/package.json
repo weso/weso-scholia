@@ -14,7 +14,7 @@
     "express": "^4.17.1",
     "fs": "0.0.1-security",
     "https": "^1.0.0",
-    "mongodb": "^4.0.1",
+    "mongodb": "^2.2.33",
     "nodemon": "^2.0.12"
   }
 }
