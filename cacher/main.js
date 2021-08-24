@@ -10,9 +10,9 @@ let querySize = 0;
 async function executeQueries() {
     startTime = Date.now();  
     for (const q of config) {
-	let queryStartTime = Date.now();
+	    let queryStartTime = Date.now();
         await executePaginatedQuery(q.query, q.parameters, q.query_name, q.count_query, q.offset)
-	let queryEndTime = Date.now();
+	    let queryEndTime = Date.now();
     	console.log(q.query_name + " synchronous time: " + (queryEndTime - queryStartTime) + " milliseconds.")
     }
     let endTime = Date.now();

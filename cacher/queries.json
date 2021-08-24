@@ -3,6 +3,7 @@
       "query": "SELECT\n?number_of_citing_works\n?author ?authorLabel (?author as ?hiddenId)\n?organization ?organizationLabel\n?example_work ?example_workLabel\nWITH {\nSELECT DISTINCT ?author WHERE {\n?author wdt:P27 | wdt:P1416/wdt:P17 | wdt:P108/wdt:P17 wd:{{ q }} .\n}\nORDER BY ?author\nLIMIT 1000\nOFFSET {w}\n} AS %authors\nWITH {\nSELECT\n?author\n(COUNT(DISTINCT ?citing_work) AS ?number_of_citing_works)\n(SAMPLE(?organization_) AS ?organization)\n(SAMPLE(?work) AS ?example_work)\nWHERE {\nINCLUDE %authors\n?work wdt:P50 ?author .\nOPTIONAL { ?citing_work wdt:P2860 ?work . }\nOPTIONAL {\n?author wdt:P1416 | wdt:P108 ?organization_ .\n?organization_ wdt:P17 wd:{{ q }}\n}\n}\nGROUP BY ?author\n} AS %results\nWHERE {\nINCLUDE %results\nFILTER(?number_of_citing_works > 10)\nservice wikibase:label { bd:serviceParam wikibase:language \"en\" . }\n}\nORDER BY DESC(?number_of_citing_works)",
       "count_query": "SELECT (COUNT(DISTINCT ?author) as ?subsetting_size) WHERE {\n?author wdt:P27 | wdt:P1416/wdt:P17 | wdt:P108/wdt:P17 wd:{{ q }} .\n}",
       "query_name": "country_authors",
+      "offset": 1000,
       "parameters": [
 "Q29",
 "Q183",
