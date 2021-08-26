@@ -95,7 +95,7 @@ async function sequenceQueriesWithOffset(sparql, offset, extractedData) {
         }
     }).catch(async (e) => {
         console.log(offset)
-        //console.log(e);
+        console.log(e);
         await sequenceQueriesWithOffset(sparql, i, extractedData);
     });
 
